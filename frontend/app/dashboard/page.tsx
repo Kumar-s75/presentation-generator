@@ -1,0 +1,219 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import api from '@/lib/axios';
+import { PlusCircle, Loader2, FileText, Clock, Trash2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { toast } from 'sonner';
+
+type Presentation = {
+  id: string;
+  prompt: string;
+  status: string;
+  createdAt: string;
+  presentationData: {
+    title: string
+  }
+};
+
+export default function DashboardPage() {
+  const [presentations, setPresentations] = useState<Presentation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchPresentations = async () => {
+      try {
+        const userId = Cookies.get('userId');
+        console.log('Dashboard - userId from cookie:', userId);
+        
+        if (!userId) {
+          console.log('No userId found in cookies, redirecting to login');
+          router.push('/auth/login');
+          return;
+        }
+        
+        const response = await api.get(`/presentation/user/${userId}`);
+        setPresentations(response.data.presentations || []);
+      } catch (error) {
+        console.error('Error fetching presentations:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPresentations();
+  }, [router]);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'COMPLETED':
+        return 'bg-green-500/20 text-green-300';
+      case 'FAILED':
+        return 'bg-red-500/20 text-red-300';
+      default:
+        return 'bg-yellow-500/20 text-yellow-300';
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent, presentationId: string) => {
+    e.stopPropagation(); 
+    try {
+      const userId = Cookies.get('userId');
+      await api.delete(`/presentation/${presentationId}`, {
+        data: { userId }
+      });
+      
+      setPresentations(presentations.filter(p => p.id !== presentationId));
+      toast.success('Presentation deleted successfully');
+    } catch (error) {
+      console.error('Error deleting presentation:', error);
+      toast.error('Failed to delete presentation');
+    }
+  };
+
+  return (
+    <div className="container mx-auto p-4 max-w-5xl flex flex-col flex-grow">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold gradient-text mb-4 md:mb-0">Your Presentations</h1>
+        <Button 
+          onClick={() => router.push('/create')}
+          className="w-full md:w-auto"
+        >
+          <PlusCircle className="h-4 w-4 mr-2" /> Create New Presentation
+        </Button>
+      </div>
+
+      <div className="flex-grow overflow-auto flex flex-col">
+        <div className="border-b border-white/10 mb-4 pb-2">
+          <p className="text-sm text-gray-400">
+            {presentations.length} {presentations.length === 1 ? 'presentation' : 'presentations'} found
+          </p>
+        </div>
+        
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : presentations.length > 0 ? (
+          <div className="overflow-y-auto pr-1 custom-scrollbar flex-grow">
+            <div className="grid gap-4 pb-48 md:pb-32 lg:pb-24"> 
+              {presentations.map((presentation) => (
+                <motion.div
+                  key={presentation.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="glass-card p-5"
+                  onClick={() => router.push(`/ppt/${presentation.id}`)}
+                  whileHover={{ scale: 1.01 }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                      <h3 className="font-medium text-lg mb-1">
+                        <FileText className="inline-block mr-2 h-5 w-5 text-primary" />
+                        {presentation.presentationData?.title && presentation.presentationData.title.length > 5 
+                          ? `${presentation.presentationData.title.substring(0, 50)}...` 
+                          : presentation.presentationData?.title || "Unknown"}
+                      </h3>
+                      <p className='text-primary font-medium text-white'>
+                        Prompt:  { presentation.prompt.length > 1  
+                         ? `${presentation.prompt.substring(0, 50)}...` 
+                         : ""}
+
+                      </p>
+                      <div className="flex items-center text-sm text-gray-400">
+                        <Clock className="h-4 w-4 mr-1" />
+                        <span>{formatDate(presentation.createdAt)}</span>
+                      </div>
+                    </div>
+                    <div className="mt-4 md:mt-0 flex items-center gap-3">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(presentation.status)}`}>
+                        {presentation.status}
+                      </span>
+                      
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="glass-card border-none">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="text-2xl font-bold gradient-text">
+                              Delete Presentation
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-gray-400">
+                              Are you sure you want to delete this presentation? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="gap-2">
+                            <AlertDialogCancel 
+                              onClick={(e) => e.stopPropagation()}
+                              className="bg-transparent hover:bg-white/5 text-gray-300 hover:text-white"
+                            >
+                              Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={(e) => handleDelete(e, presentation.id)}
+                              className="bg-red-500/20 text-red-300 hover:bg-red-500/30"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="glass-card p-8 text-center"
+          >
+            <h2 className="text-2xl font-semibold mb-4">No presentations yet</h2>
+            <p className="text-gray-400 mb-6">
+              Create your first AI-powered presentation to get started.
+            </p>
+            <Button onClick={() => router.push('/create')}>
+              <PlusCircle className="h-4 w-4 mr-2" /> Create Presentation
+            </Button>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  );
+}
