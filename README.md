@@ -1,4 +1,4 @@
-# Encorp AI
+# Present AI
 
 Present  AI is an AI-powered slide generator that takes user input prompts and generates structured presentations using Gemini AI. It supports both PDF and PPT export functionalities.
 
