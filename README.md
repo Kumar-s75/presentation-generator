@@ -6,7 +6,7 @@ Ai-present-gen is an AI-powered slide generator that takes user input prompts an
 
 
 
-https://github.com/user-attachments/assets/4a762f55-54c7-467b-81af-e71df4da0ced
+
 
 
 ## Features
@@ -118,12 +118,5 @@ Before setting up this project, ensure you have the following installed:
 - **Resource Efficiency**: Worker remains idle until tasks arrive, reducing CPU and Redis load
 - **Reliability**: Multiple safeguards ensure tasks are never lost
 - **Scalability**: Multiple workers can subscribe to the same notification channel
-
-## Contributing
-Feel free to open issues and submit pull requests for new features or improvements!
-
-## License
-This project is licensed under the [MIT License](./LICENSE) - see the LICENSE file for details.
-
-Copyright (c) 2025 Rudra Sankha Sinhamahapatra
+  
 
