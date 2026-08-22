@@ -63,7 +63,7 @@ export function Header() {
             >
               <MonitorPlay className="h-5 w-5 text-primary group-hover:text-blue-400 transition-colors" />
             </motion.div>
-            <span className="font-bold text-lg gradient-text">Encorp AI</span>
+            <span className="font-bold text-lg gradient-text"> MagicAI </span>
           </Link>
 
       
@@ -103,7 +103,7 @@ export function Header() {
             <motion.a 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
-              href="https://github.com/Rudra-Sankha-Sinhamahapatra/Encorp" 
+              href="" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="flex items-center gap-1.5 bg-gradient-to-r from-zinc-800/90 to-zinc-900/90 

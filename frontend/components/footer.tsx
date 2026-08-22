@@ -13,16 +13,16 @@ export const Footer = ({ className = "" }: FooterProps) => {
                     <div className="bg-gradient-to-br from-primary/20 to-blue-600/20 p-2 rounded-lg group-hover:from-primary/30 group-hover:to-blue-600/30 transition-all duration-300">
                         <MonitorPlay className="h-5 w-5 text-primary group-hover:text-blue-400 transition-colors" />
                     </div>
-                    <span className="font-bold text-lg gradient-text">Encorp AI</span>
+                    <span className="font-bold text-lg gradient-text">Magic AI</span>
                 </div>
                 
                 <p className="text-center text-sm text-white/50 md:text-left">
-                    &copy; {new Date().getFullYear()} Encorp AI. All rights reserved.
+                    &copy; {new Date().getFullYear()} Magic AI. All rights reserved.
                 </p>
                 
                 <div className="flex items-center gap-3">
                     <a 
-                        href="https://github.com/Rudra-Sankha-Sinhamahapatra" 
+                        href="" 
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className="text-gray-400 hover:text-primary hover:bg-white/5 p-1.5 rounded-full transition-colors"
@@ -30,7 +30,7 @@ export const Footer = ({ className = "" }: FooterProps) => {
                         <Github className="h-4 w-4" />
                     </a>
                     <a 
-                        href="https://x.com/RudraSankha" 
+                        href="" 
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className="text-gray-400 hover:text-primary hover:bg-white/5 p-1.5 rounded-full transition-colors"
@@ -38,7 +38,7 @@ export const Footer = ({ className = "" }: FooterProps) => {
                         <Twitter className="h-4 w-4" />
                     </a>
                     <a 
-                        href="https://www.linkedin.com/in/rudra-sankha-sinhamahapatra-6311aa1bb/" 
+                        href="" 
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className="text-gray-400 hover:text-primary hover:bg-white/5 p-1.5 rounded-full transition-colors"
